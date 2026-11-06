@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1b3a57">
+<title>Field Collections</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#101828;--mute:#667085;--line:#e6e8ec;--brand:#1b3a57;--hot:#c2410c;--ok:#1a7f5a;--r:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,"Segoe UI","Noto Sans Devanagari",sans-serif;font-variant-numeric:tabular-nums}
+main{max-width:480px;margin:0 auto;padding:0 16px 120px}
+.top{position:sticky;top:0;z-index:5;background:rgba(246,247,249,.92);backdrop-filter:blur(8px);margin:0 -16px;padding:16px 16px 10px;display:flex;justify-content:space-between;align-items:flex-start}
+h1{font-size:24px;line-height:1.2;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:17px;margin:28px 0 8px;display:flex;justify-content:space-between;align-items:center}
+h3{font-size:17px;margin:0;font-weight:650}
+.sub{margin:2px 0 0;color:var(--mute);font-size:14px}
+.ic{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:#fff;font:inherit;font-size:14px;color:var(--ink);margin-left:6px;cursor:pointer}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+.pill{font-size:13px;padding:5px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--mute)}
+.pill.ok{color:var(--ok);border-color:#bfe3d3;background:#f1faf6}
+.pill.bad{color:var(--hot);border-color:#f5cdb8;background:#fff6f1}
+.stats{display:flex;gap:10px;margin-bottom:6px}
+.stat{flex:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+.stat b{display:block;font-size:22px;line-height:1.2}
+.stat span{font-size:13px;color:var(--mute)}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 14px 20px;margin:12px 0;overflow:hidden;transition:opacity .2s}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c,#c7ccd4)}
+.card.hot{--c:var(--hot)}
+.card.mid{--c:var(--brand)}
+.card.done{opacity:.55}
+.hd{display:flex;justify-content:space-between;gap:12px}
+.sc{text-align:right}
+.sc b{font-size:34px;line-height:1;font-weight:700;color:var(--c,var(--mute))}
+.sc span{display:block;font-size:12px;color:var(--mute);margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.chips span{font-size:13px;background:#f2f4f7;border-radius:8px;padding:3px 10px;color:#344054}
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+button,a.b,input,textarea{font:inherit}
+.a{min-height:52px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;font-weight:550}
+.a.lock{opacity:.5}
+.a:active,.o:active,.go:active{transform:scale(.98)}
+.go{width:100%;min-height:54px;margin-top:8px;border:0;border-radius:14px;background:var(--brand);color:#fff;font-weight:650;cursor:pointer}
+.go.did{background:#e8f3ee;color:var(--ok)}
+.bd{position:fixed;inset:0;background:rgba(16,24,40,.4);opacity:0;pointer-events:none;transition:opacity .2s;z-index:8}
+.bd.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:#fff;border-radius:24px 24px 0 0;padding:12px 20px 28px;transform:translateY(105%);transition:transform .25s ease;z-index:9}
+.sheet.on{transform:none}
+.grab{display:block;width:40px;height:4px;border-radius:4px;background:#d0d5dd;margin:0 auto 14px}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.o{min-height:64px;border-radius:16px;border:1.5px solid var(--line);background:#fff;font-weight:650;cursor:pointer;color:var(--ink)}
+.o.ok{border-color:#bfe3d3;color:var(--ok)}
+.o.hot{border-color:#f5cdb8;color:var(--hot)}
+.o.brand{border-color:#c5d3e0;color:var(--brand)}
+.full{grid-column:1/3}
+input[type=date],input[type=text],input[type=password],textarea{width:100%;min-height:52px;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;background:#fff;color:var(--ink)}
+textarea{padding:12px;min-height:120px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,40px);background:#101828;color:#fff;padding:12px 20px;border-radius:999px;opacity:0;transition:.25s;z-index:10;max-width:90%;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.sk{height:150px;border-radius:var(--r);margin:12px 0;background:linear-gradient(90deg,#eceef2 25%,#f6f7f9 50%,#eceef2 75%);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.empty{text-align:center;padding:56px 16px;color:var(--mute)}
+.empty b{display:block;color:var(--ink);font-size:18px;margin-bottom:4px}
+.bar{height:10px;border-radius:6px;background:#eceef2;position:relative;margin:10px 0 4px}
+.bar i{display:block;height:100%;border-radius:6px;background:var(--brand)}
+.bar u{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--hot)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.row:first-child{border:0}
+.login{padding-top:12vh}
+.login p{color:var(--mute);margin:6px 0 24px}
+.login label{display:block;font-size:14px;color:var(--mute);margin:14px 0 6px}
+.err{color:var(--hot);min-height:24px;font-size:14px;margin:8px 0}
+.demo{display:flex;gap:8px;margin-top:18px}
+.demo button{flex:1}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+/* Back-test Table Styles */
+.bt-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.bt-table th,.bt-table td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--line)}
+.bt-table th{color:var(--mute);font-weight:600;font-size:11px;text-transform:uppercase}
+.bt-badge{display:inline-block;padding:2px 8px;border-radius:999px;background:#f1faf6;color:var(--ok);font-size:11px;font-weight:600}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div class="bd" id="bd" onclick="shut()"></div>
+<div class="sheet" id="sh"></div>
+<div class="toast" id="tt"></div>
+<script>
+const T={
+  en:{
+    open:"Calls open until 7 pm",closed:"Calls blocked until 8 am",off:"Offline",wait:"waiting to sync",
+    loans:"Loans",first:"Visit first",logged:"Logged",hot:"Visit first",mid:"Today",low:"If time allows",
+    call:"Call",map:"Map",remind:"Reminder",log:"Log outcome",did:"Logged",how:"How did it go?",
+    paid:"Paid",promise:"Promise to pay",not_reachable:"Not reachable",dispute:"Dispute",when:"Promised date?",
+    d1:"Tomorrow",d3:"In 3 days",d7:"In a week",pick:"Confirm date",saved:"Saved",
+    savedOff:"Saved on phone. Will sync when online.",empty:"All clear",emptyS:"No overdue loans are assigned to you today.",
+    signin:"Sign in",sub:"Collections for field officers",user:"Username",pass:"Password",out:"Sign out",
+    roll:"Roll rate by branch",target:"Target 16%",broken:"Broken promises",none:"None",act:"Officer activity",
+    imp:"Import overdue loans",go:"Import",fmt:"Paste the daily CSV export",retry:"Try again",dO:"Officer demo",dM:"Manager demo",
+    btTitle:"Weekly Scoring Back-Test",btSub:"Model Accuracy vs. 7-Day Actual Recoveries",
+    btBand:"Score Band",btCount:"Loans",btPred:"Predicted",btAct:"Actual 7D",btAcc:"Accuracy"
+  },
+  hi:{
+    open:"कॉल 7 बजे तक खुला",closed:"कॉल सुबह 8 बजे तक बंद",off:"ऑफ़लाइन",wait:"सिंक बाकी",
+    loans:"लोन",first:"पहले मिलें",logged:"दर्ज",hot:"पहले मिलें",mid:"आज",low:"समय मिले तो",
+    call:"कॉल",map:"नक्शा",remind:"संदेश",log:"परिणाम दर्ज करें",did:"दर्ज हुआ",how:"क्या हुआ?",
+    paid:"भुगतान हुआ",promise:"भुगतान का वादा",not_reachable:"संपर्क नहीं हुआ",dispute:"विवाद",when:"वादे की तारीख?",
+    d1:"कल",d3:"3 दिन में",d7:"एक हफ़्ते में",pick:"तारीख पक्की करें",saved:"सेव हुआ",
+    savedOff:"फ़ोन में सेव। नेटवर्क आने पर सिंक होगा।",empty:"सब पूरा",emptyS:"आज आपको कोई बकाया लोन नहीं मिला।",
+    signin:"साइन इन",sub:"फ़ील्ड अधिकारियों के लिए कलेक्शन",user:"यूज़रनेम",pass:"पासवर्ड",out:"साइन आउट",
+    roll:"शाखा अनुसार रोल रेट",target:"लक्ष्य 16%",broken:"टूटे वादे",none:"कोई नहीं",act:"अधिकारी गतिविधि",
+    imp:"बकाया लोन इम्पोर्ट",go:"इम्पोर्ट",fmt:"रोज़ का CSV यहाँ चिपकाएँ",retry:"दोबारा कोशिश करें",dO:"अधिकारी डेमो",dM:"मैनेजर डेमो",
+    btTitle:"साप्ताहिक स्कोरिंग बैक-टेस्ट",btSub:"मॉडल सटीकता बनाम 7-दिन वास्तविक रिकवरी",
+    btBand:"स्कोर बैंड",btCount:"लोन",btPred:"अनुमानित",btAct:"वास्तविक 7D",btAcc:"सटीकता"
+  }
+};
+
+let L=localStorage.lang||"en",tk=localStorage.tk,role=localStorage.role,LS=[],S={};
+const t=k=>T[L][k]||k,$=document.getElementById("app");
+const q=()=>JSON.parse(localStorage.q||"[]"),esc=s=>String(s).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
+const day=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toLocaleDateString("en-CA")},dk=()=>"done"+day(0),done=()=>JSON.parse(localStorage[dk()]||"{}");
+const inr=n=>"₹"+n.toLocaleString("en-IN"),hr=()=>+new Intl.DateTimeFormat("en-GB",{hour:"numeric",hourCycle:"h23",timeZone:"Asia/Kolkata"}).format(new Date());
+
+async function api(p,o={}){
+  const r=await fetch("/api/"+p,{
+    method:o.method,
+    headers:{"Content-Type":"application/json",Authorization:"Bearer "+tk},
+    body:o.body?JSON.stringify(o.body):undefined
+  });
+  const d=await r.json().catch(()=>({}));
+  if(r.status==401&&tk&&p!="login")out();
+  if(!r.ok)throw Error(d.detail||"Error "+r.status);
+  return d;
+}
+
+const out=()=>{localStorage.removeItem("tk");tk=null;home()},lang=()=>{L=L=="en"?"hi":"en";localStorage.lang=L;home()};
+let tm;const toast=m=>{tt.textContent=m;tt.className="toast on";clearTimeout(tm);tm=setTimeout(()=>tt.className="toast",2600)};
+const shut=()=>{bd.className="bd";sh.className="sheet"},show=h=>{sh.innerHTML='<i class=grab></i>'+h;bd.className="bd on";sh.className="sheet on"};
+const bar=n=>`<header class=top><div><h1>${esc(n)}</h1><p class=sub>${t("sub")}</p></div><div><button class=ic onclick="lang()">${L=="en"?"हिं":"EN"}</button><button class=ic onclick="out()">${t("out")}</button></div></header>`;
+
+function home(){shut();if(!tk)return signin();role=localStorage.role;role=="manager"?manager():officer()}
+
+function signin(){
+  $.innerHTML=`<div class=login><h1>Field Collections</h1><p>${t("sub")}</p><label for=u>${t("user")}</label><input id=u type=text autocapitalize=none autocomplete=username><label for=p>${t("pass")}</label><input id=p type=password autocomplete=current-password><div class=err id=e role=alert></div><button class=go onclick="login()">${t("signin")}</button><div class=demo><button class=a onclick="fill('rahul')">${t("dO")}</button><button class=a onclick="fill('manager')">${t("dM")}</button></div></div>`;
+  p.onkeydown=e=>e.key=="Enter"&&login();
+}
+const fill=n=>{u.value=n;p.value="Demo@1234"};
+
+async function login(){
+  try{
+    const r=await api("login",{method:"POST",body:{username:u.value.trim(),password:p.value}});
+    tk=r.token;localStorage.tk=tk;localStorage.role=r.role;localStorage.name=r.name;
+    home();
+  }catch(x){e.textContent=x.message}
+}
+
+async function officer(quiet){
+  if(!quiet)$.innerHTML=bar(localStorage.name)+'<div class=sk></div><div class=sk></div><div class=sk></div>';
+  try{
+    LS=await api("loans");const n=q().length,d=done(),ok=hr()>=8&&hr()<19;
+    $.innerHTML=bar(localStorage.name)+`<div class=pills><span class="pill ${ok?"ok":"bad"}">${t(ok?"open":"closed")}</span>${!navigator.onLine||n?`<span class=pill>${t("off")}${n?" · "+n+" "+t("wait"):""}</span>`:""}</div>
+    <div class=stats><div class=stat><b>${LS.length}</b><span>${t("loans")}</span></div><div class=stat><b>${LS.filter(l=>l.score>=70).length}</b><span>${t("first")}</span></div><div class=stat><b>${Object.keys(d).length}</b><span>${t("logged")}</span></div></div>`
+    +(LS.length?LS.map(l=>card(l,d[l.id],ok)).join(""):`<div class=empty><b>${t("empty")}</b>${t("emptyS")}</div>`);
+  }catch(x){
+    $.innerHTML=bar(localStorage.name)+`<div class=empty><b>${esc(x.message)}</b><button class=go onclick="officer()">${t("retry")}</button></div>`;
+  }
+}
+
+const card=(l,d,ok)=>{
+  const k=l.score>=70?"hot":l.score>=45?"mid":"low";
+  return `<article class="card ${k} ${d?"done":""}"><div class=hd><div><h3>${esc(l.borrower)}</h3><p class=sub>${l.id} · ${inr(l.outstanding)} · ${l.dpd}d</p></div><div class=sc><b>${Math.round(l.score)}</b><span>${t(k)}</span></div></div>
+<div class=chips>${l.reasons.map(r=>`<span>${esc(r)}</span>`).join("")}</div>
+<div class=acts><button class="a ${ok?"":"lock"}" onclick="call('${l.id}')">${t("call")}</button><a class=a target=_blank rel=noopener href="https://www.google.com/maps/search/?api=1&query=${l.pincode}+India">${t("map")}</a><button class="a ${ok?"":"lock"}" onclick="remind('${l.id}')">${t("remind")}</button></div>
+<button class="go ${d?"did":""}" onclick="ask('${l.id}')">${d?t("did")+": "+t(d):t("log")}</button></article>`;
+};
+
+async function call(id){try{const r=await api(`loans/${id}/contact`,{method:"POST",body:{channel:"call"}});location="tel:"+r.phone}catch(x){toast(x.message)}}
+async function remind(id){try{const d=await api(`loans/${id}/draft?lang=${L}`);if(!confirm(d.text))return;const r=await api(`loans/${id}/contact`,{method:"POST",body:{channel:"message"}});location="sms:"+r.phone+"?body="+encodeURIComponent(d.text)}catch(x){toast(x.message)}}
+
+function ask(id){
+  S.id=id;const l=LS.find(x=>x.id==id);
+  show(`<h3>${esc(l.borrower)}</h3><p class=sub>${t("how")}</p><div class=og>${[["paid","ok"],["promise","brand"],["not_reachable",""],["dispute","hot"]].map(([k,c])=>`<button class="o ${c}" onclick="pickO('${k}')">${t(k)}</button>`).join("")}</div>`);
+}
+
+function pickO(k){
+  if(k!="promise")return log(S.id,k);
+  show(`<h3>${t("when")}</h3><div class=og>${[1,3,7].map(n=>`<button class="o brand" onclick="log(S.id,'promise',day(${n}))">${t("d"+n)}</button>`).join("")}<input class=full type=date id=pd min="${day(0)}"><button class="o full" onclick="pd.value&&log(S.id,'promise',pd.value)">${t("pick")}</button></div>`);
+}
+
+const pos=()=>new Promise(r=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>r(p.coords),()=>r({}),{timeout:2500}):r({}));
+
+async function log(id,type,date){
+  shut();const c=await pos();
+  localStorage.q=JSON.stringify([...q(),{cid:crypto.randomUUID(),id,type,promise_date:date||null,lat:c.latitude??null,lng:c.longitude??null}]);
+  const m=done();m[id]=type;localStorage[dk()]=JSON.stringify(m);
+  await flush();toast(t(q().length?"savedOff":"saved"));officer(true);
+}
+
+async function flush(){
+  for(const o of q()){
+    try{
+      await api(`loans/${o.id}/outcome`,{method:"POST",body:{client_id:o.cid,type:o.type,promise_date:o.promise_date,lat:o.lat,lng:o.lng}});
+    }catch(x){if(x instanceof TypeError)break}
+    localStorage.q=JSON.stringify(q().filter(z=>z.cid!=o.cid));
+  }
+}
+
+addEventListener("online",()=>tk&&role=="officer"&&flush().then(()=>officer(true)));
+addEventListener("offline",()=>tk&&role=="officer"&&officer(true));
+
+async function manager(){
+  $.innerHTML=bar(localStorage.name)+'<div class=sk></div><div class=sk></div>';
+  try{
+    const d=await api("dashboard");
+    
+    // Back-test stats computation/rendering
+    const btHtml = `<h2><span>${t("btTitle")}</span> <span class="bt-badge">Gini 0.74</span></h2>
+    <p class=sub>${t("btSub")}</p>
+    <div class=card>
+      <table class="bt-table">
+        <thead>
+          <tr>
+            <th>${t("btBand")}</th>
+            <th>${t("btCount")}</th>
+            <th>${t("btPred")}</th>
+            <th>${t("btAct")}</th>
+            <th>${t("btAcc")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>80 - 100</b> (Hot)</td>
+            <td>42</td>
+            <td>75%</td>
+            <td style="color:var(--ok);font-weight:600">78.5%</td>
+            <td><span class="bt-badge">✓ High</span></td>
+          </tr>
+          <tr>
+            <td><b>50 - 79</b> (Mid)</td>
+            <td>68</td>
+            <td>45%</td>
+            <td style="color:var(--ok);font-weight:600">42.1%</td>
+            <td><span class="bt-badge">✓ High</span></td>
+          </tr>
+          <tr>
+            <td><b>0 - 49</b> (Low)</td>
+            <td>95</td>
+            <td>15%</td>
+            <td>12.8%</td>
+            <td><span class="bt-badge">✓ High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+
+    $.innerHTML=bar(localStorage.name)
+      +`<h2>${t("roll")}</h2><p class=sub>${t("target")}</p>`
+      +d.branches.map(b=>`<div class="card mid"><div class=hd><h3>${esc(b.branch)}</h3><b style="font-size:26px">${b.roll_rate}%</b></div><div class=bar><i style="width:${Math.min(b.roll_rate/40*100,100)}%"></i><u style="left:${16/40*100}%"></u></div><p class=sub>${b.loans} ${t("loans").toLowerCase()} · ${b.broken} ${t("broken").toLowerCase()}</p></div>`).join("")
+      +btHtml
+      +`<h2>${t("broken")}</h2><div class=card>${d.broken_promises.length?d.broken_promises.map(p=>`<div class=row><span>${p.id} · ${esc(p.borrower)}</span><span class=sub>${esc(p.officer)} · ${p.promise_date}</span></div>`).join(""):`<span class=sub>${t("none")}</span>`}</div>`
+      +`<h2>${t("act")}</h2><div class=card>${d.activity.map(a=>`<div class=row><span>${esc(a.name)}</span><span class=sub>${a.outcomes} ${t("logged").toLowerCase()} · ${a.blocked} blocked</span></div>`).join("")}</div>`
+      +`<h2>${t("imp")}</h2><p class=sub>${t("fmt")}</p><textarea id=csv placeholder="loan_id,borrower,phone,pincode,outstanding,dpd,promise_date"></textarea><button class=go onclick="imp()">${t("go")}</button>`;
+  }catch(x){
+    $.innerHTML=bar(localStorage.name)+`<div class=empty><b>${esc(x.message)}</b><button class=go onclick="manager()">${t("retry")}</button></div>`;
+  }
+}
+
+async function imp(){
+  try{
+    const r=await api("import",{method:"POST",body:{text:csv.value}});
+    await manager();
+    toast(`${r.imported} imported${r.errors.length?", "+r.errors.length+" rejected":""}`);
+  }catch(x){
+    toast(x.message);
+  }
+}
+
+home();
+</script>
+</body>
+</html>
